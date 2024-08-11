@@ -1,21 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
-const cors = require('cors');  // Add this for CORS handling
+const cors = require('cors');  
 const app = express();
 const port = 5000;
 
-// Middleware
+
 app.use(bodyParser.json());
 app.use(cors());  // Enable CORS for all routes
 
-// Database setup
+
 const db = new sqlite3.Database('./database.db');
 
-// Initialize the database tables and indexes
+
 function initializeDatabase() {
     db.serialize(() => {
-        // Drop tables if they exist
+        
         db.run('DROP TABLE IF EXISTS CompletedOrderTable');
         db.run('DROP TABLE IF EXISTS PendingOrderTable');
 
@@ -43,7 +43,7 @@ function initializeDatabase() {
             )
         `);
 
-        // Add indexes to speed up queries
+        
         db.run('CREATE INDEX IF NOT EXISTS idx_buyer_price ON PendingOrderTable (buyer_price)');
         db.run('CREATE INDEX IF NOT EXISTS idx_seller_price ON PendingOrderTable (seller_price)');
     });
@@ -51,7 +51,7 @@ function initializeDatabase() {
 
 initializeDatabase();
 
-// API to create an order
+
 app.post('/order', (req, res) => {
     const { buyer_qty, buyer_price, seller_price, seller_qty } = req.body;
 
@@ -95,7 +95,7 @@ app.get('/orders', (req, res) => {
     });
 });
 
-// Function to check for matches and update orders
+// Function to check for matches and updates
 function checkForMatches() {
     db.serialize(() => {
         db.all(`SELECT * FROM PendingOrderTable WHERE buyer_price >= seller_price`, (err, rows) => {
